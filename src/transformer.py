@@ -22,7 +22,7 @@ class SimpleGenerativePRF(transformer):
         first_row = query.iloc[0]
         input_query = first_row['query']
         
-        prompt = self.prompt.format(query = input_query)
+        prompt = self.prompt.format(input_query = input_query)
         output =  self.model.generate(prompt)
 
         tokens = output.split()
@@ -101,7 +101,7 @@ class GenerativePRF(transformer):
         k = min(self.k, len(query))
 
         context = self.context_extract(query, k)
-        prompt = self.prompt.format(query = input_query, context = context)
+        prompt = self.prompt.format(input_query = input_query, context = context)
         output =  self.model.generate(prompt)
 
         tokens = output.split()
