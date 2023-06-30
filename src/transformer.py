@@ -40,9 +40,9 @@ class SimpleGenerativePRF(transformer):
 
         outputs = inputs.copy()
         queries = outputs['qid', 'query']
-        outputs = queries.groupby('qid').apply(self.logic)
+        queries = queries.groupby('qid').apply(self.logic)
 
-        outputs = outputs.set_index('qid')
+        queries = queries.set_index('qid')
         outputs['query_0'] = outputs.apply(lambda x: queries[x]['query_0'], axis = 1)
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
