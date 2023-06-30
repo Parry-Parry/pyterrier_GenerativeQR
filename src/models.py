@@ -4,7 +4,7 @@ from abc import abstractmethod
 from numpy import array_split
 import torch
 import re
-from .generation import FLAN_T5
+from .configs import FLAN_T5
 
 clean = lambda x : re.sub(r"[^a-zA-Z0-9¿]+", " ", x)
 
