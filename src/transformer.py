@@ -1,5 +1,4 @@
 from typing import Any
-import pyterrier as pt
 from pyterrier import transformer
 from collections import Counter
 import pandas as pd
@@ -86,7 +85,9 @@ class GenerativePRF(transformer):
         return ' '.join(inputs.head(k)[self.text_attr].values)
     
     def get_context_firstp(self, inputs, k):
-        inputs = inputs.groupby('docno').apply(lambda x: x.sort_values('score').head(1))
+        inputs = inputs.groupby('docno').apply(lambda x: x.head(1))
+        inputs = inputs.sort_values('rank')
+        return ' '.join(inputs.head(k)[self.text_attr].values)
     
     def get_context_maxp(self, inputs, k):
         inputs = inputs.groupby('docno').apply(lambda x: x.sort_values('score').head(1))
@@ -120,11 +121,10 @@ class GenerativePRF(transformer):
             if attr not in inputs.columns:
                 raise ValueError(f"Input must contain {attr} column")
 
-        queries = inputs.copy()
         outputs = inputs.copy()
-        new_queries = queries.groupby('qid').apply(self.logic)
+        queries = inputs.copy().groupby('qid').apply(self.logic)
 
-        new_queries = new_queries.set_index('qid')
+        queries = queries.set_index('qid')
         outputs['query_0'] = outputs['qid'].apply(lambda x: queries[x]['query_0'], axis = 1)
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
