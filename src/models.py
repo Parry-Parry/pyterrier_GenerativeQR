@@ -11,12 +11,12 @@ clean = lambda x : re.sub(r"[^a-zA-Z0-9¿]+", " ", x)
 class GenericModel:
     def __init__(self, 
                  generation_config : dict = None, 
-                 num_return_sequences : int = 1,
+                 num_return_sequences : int = None,
                  batch_size : int = 1, 
                  device = 'cpu') -> None:
         
         if not generation_config: generation_config = FLAN_T5
-        generation_config['num_return_sequences'] = num_return_sequences
+        if num_return_sequences: generation_config['num_return_sequences'] = num_return_sequences
         self.generation_config = generation_config
         self.batch_size = batch_size
         self.device = torch.device(device)
