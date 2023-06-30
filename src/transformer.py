@@ -31,7 +31,7 @@ class SimpleGenerativePRF(transformer):
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
 
-        new_frame = {'qid' : first_row['qid'], 'query_0' : first_row['query'], 'query' : new_query}
+        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
         if self.return_counts: new_frame['counts'] = len(count)
 
         return pd.DataFrame(new_frame)
@@ -43,7 +43,7 @@ class SimpleGenerativePRF(transformer):
         queries = queries.groupby('qid').apply(self.logic)
 
         queries = queries.set_index('qid')
-        outputs['query_0'] = outputs.apply(lambda x: queries[x]['query_0'], axis = 1)
+        outputs['query_0'] = outputs['query']
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
 
@@ -51,7 +51,7 @@ class SimpleGenerativePRF(transformer):
 
 class GenerativePRF(transformer):
     essential = ['docno', 'qid', 'query']
-    default = 'Improve the search effectiveness by suggesting expansion terms for the query:{input_query}, based on the given context information: {passage_context}'
+    default = 'Improve the search effectiveness by suggesting expansion terms for the query:{input_query}, based on the given context information: {context}'
     def __init__(self, 
                  model : Any, 
                  prompt : str = None,
@@ -110,7 +110,7 @@ class GenerativePRF(transformer):
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
 
-        new_frame = {'qid' : first_row['qid'], 'query_0' : first_row['query'], 'query' : new_query}
+        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
         if self.return_counts: new_frame['counts'] = len(count)
 
         return pd.DataFrame(new_frame)
@@ -125,7 +125,7 @@ class GenerativePRF(transformer):
         queries = inputs.copy().groupby('qid').apply(self.logic)
 
         queries = queries.set_index('qid')
-        outputs['query_0'] = outputs['qid'].apply(lambda x: queries[x]['query_0'], axis = 1)
+        outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
 
