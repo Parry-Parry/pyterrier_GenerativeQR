@@ -34,7 +34,12 @@ class GenericModel:
             raise TypeError("Input must be a string or a pandas Object")
 
 class FLANT5(GenericModel):
-    def __init__(self, model_name : str, generation_config: dict = None, num_return_sequences: int = 1, batch_size: int = 1, device = 'cpu') -> None:
+    def __init__(self, 
+                 model_name : str, 
+                 generation_config: dict = None, 
+                 num_return_sequences: int = 1, 
+                 batch_size: int = 1, 
+                 device = 'cpu') -> None:
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
         from transformers import T5ForConditionalGeneration, T5TokenizerFast
