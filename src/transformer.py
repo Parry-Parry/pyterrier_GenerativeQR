@@ -121,10 +121,10 @@ class GenerativePRF(transformer):
             if attr not in inputs.columns:
                 raise ValueError(f"Input must contain {attr} column")
 
-        outputs = inputs.copy()
         queries = inputs.copy().groupby('qid').apply(self.logic)
-
         queries = queries.set_index('qid')
+
+        outputs = inputs.copy()
         outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
