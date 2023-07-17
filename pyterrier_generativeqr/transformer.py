@@ -3,7 +3,7 @@ from pyterrier import transformer
 from collections import Counter
 import pandas as pd
     
-class SimpleGenerativePRF(transformer):
+class GenerativeQR(transformer):
     default = 'Improve the search effectiveness by suggesting expansion terms for the query: {input_query}'
     def __init__(self, 
                  model : Any, 

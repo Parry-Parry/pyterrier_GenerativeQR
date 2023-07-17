@@ -33,7 +33,7 @@ class GenericModel:
         else: 
             raise TypeError("Input must be a string or a pandas Object")
 
-class FLANT5(GenericModel):
+class FLANt5(GenericModel):
     def __init__(self, 
                  model_name : str, 
                  generation_config: dict = None, 
