@@ -4,7 +4,7 @@ from abc import abstractmethod
 from numpy import array_split
 import torch
 import re
-from .configs import FLAN_T5
+from .configs import creative
 
 clean = lambda x : re.sub(r"[^a-zA-Z0-9¿]+", " ", x)
 
@@ -15,7 +15,7 @@ class GenericModel:
                  batch_size : int = 1, 
                  device = 'cpu') -> None:
         
-        if not generation_config: generation_config = FLAN_T5
+        if not generation_config: generation_config = creative
         if num_return_sequences: generation_config['num_return_sequences'] = num_return_sequences
         self.generation_config = generation_config
         self.batch_size = batch_size
@@ -33,7 +33,7 @@ class GenericModel:
         else: 
             raise TypeError("Input must be a string or a pandas Object")
 
-class FLANt5(GenericModel):
+class FLANT5(GenericModel):
     def __init__(self, 
                  model_name : str, 
                  generation_config: dict = None, 

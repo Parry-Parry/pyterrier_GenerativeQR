@@ -1,5 +1,5 @@
 
-FLAN_T5 = {
+creative = {
     'min_length' : 20, 
     'max_new_tokens' : 40, 
     'temperature' : 1.2,
