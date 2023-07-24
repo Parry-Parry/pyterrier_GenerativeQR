@@ -70,15 +70,14 @@ class GenerativePRF(pt.Transformer):
 
         self.essential.append(self.text_attr)
 
-        match type:
-            case 'topp':
-                self.context_extract = self.get_context_topp
-            case 'firstp':
-                self.context_extract = self.get_context_firstp
-            case 'maxp':
-                self.context_extract = self.get_context_maxp
-            case _:
-                raise ValueError("type must be either topp, firstp or maxp")
+        if type =='topp':
+            self.context_extract = self.get_context_topp
+        elif type == 'firstp':
+            self.context_extract = self.get_context_firstp
+        elif type == 'maxp':
+            self.context_extract = self.get_context_maxp
+        else:
+            raise ValueError("type must be either topp, firstp or maxp")
 
     def get_context_topp(self, inputs, k):
         inputs = inputs.sort_values('rank')
