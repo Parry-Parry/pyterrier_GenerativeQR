@@ -1,9 +1,9 @@
 from typing import Any
-from pyterrier import transformer
+import pyterrier as pt
 from collections import Counter
 import pandas as pd
     
-class GenerativeQR(transformer):
+class GenerativeQR(pt.Transformer):
     default = 'Improve the search effectiveness by suggesting expansion terms for the query: {input_query}'
     def __init__(self, 
                  model : Any, 
@@ -49,7 +49,7 @@ class GenerativeQR(transformer):
 
         return outputs
 
-class GenerativePRF(transformer):
+class GenerativePRF(pt.Transformer):
     essential = ['docno', 'qid', 'query']
     default = 'Improve the search effectiveness by suggesting expansion terms for the query:{input_query}, based on the given context information: {context}'
     def __init__(self, 
