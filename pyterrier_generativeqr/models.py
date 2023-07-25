@@ -39,11 +39,12 @@ class FLANT5(GenericModel):
                  generation_config: dict = None, 
                  num_return_sequences: int = 1, 
                  batch_size: int = 1, 
-                 device = 'cpu') -> None:
+                 device = 'cpu',
+                 **kwargs) -> None:
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
         from transformers import T5ForConditionalGeneration, T5TokenizerFast
-        self.model = T5ForConditionalGeneration.from_pretrained(model_name)
+        self.model = T5ForConditionalGeneration.from_pretrained(model_name, **kwargs)
         self.tokenizer = T5TokenizerFast.from_pretrained(model_name)
     
     def postprocess(self, text):
