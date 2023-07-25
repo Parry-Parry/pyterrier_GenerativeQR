@@ -2,6 +2,7 @@ from typing import Any
 import pyterrier as pt
 from collections import Counter
 import pandas as pd
+from pyterrier.model import push_queries
     
 class GenerativeQR(pt.Transformer):
     default = 'Improve the search effectiveness by suggesting expansion terms for the query: {input_query}'
@@ -43,7 +44,7 @@ class GenerativeQR(pt.Transformer):
         queries = queries.groupby('qid').apply(self.logic)
 
         queries = queries.set_index('qid')
-        outputs['query_0'] = outputs['query']
+        push_queries(queries, inplace = True)
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
 
@@ -124,7 +125,7 @@ class GenerativePRF(pt.Transformer):
         queries = queries.set_index('qid')
 
         outputs = inputs.copy()
-        outputs['query_0'] = outputs['query']
+        push_queries(queries, inplace = True)
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
 
