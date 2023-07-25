@@ -48,6 +48,7 @@ class FLANT5(GenericModel):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     def postprocess(self, text):
+
         text = [clean(' '.join(t)) for t in text]
         return text if len(text) > 1 else text[0]
 
@@ -57,4 +58,5 @@ class FLANT5(GenericModel):
         inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').to(self.device)
         outputs = self.model.generate(**inputs, **self.generation_config)
         outputs_text = self.tokenizer.batch_decode(outputs, skip_special_tokens = True)
+        print(outputs_text)
         return self.postprocess(outputs_text)

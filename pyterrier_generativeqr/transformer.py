@@ -26,26 +26,20 @@ class GenerativeQR(pt.Transformer):
         prompt = self.prompt.format(input_query = input_query)
         output =  self.model.generate(prompt)
 
-        tokens = output.split()
-        count = Counter(output)
+        tokens = output.split(' ')
 
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
 
-        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
-        if self.return_counts: new_frame['counts'] = len(count)
-
-        return pd.DataFrame.from_records([new_frame])
+        return new_query
 
     def transform(self, inputs):
 
         outputs = inputs.copy()
-        queries = outputs[['qid', 'query']]
-        x = queries.groupby('qid').apply(self.logic)
-        print(x)
-        queries = pd.concat(x, axis=0)
-
-        queries = queries.set_index('qid')['query'].to_dict()
+        queries = outputs[['qid', 'query']].drop_duplicates()
+        queries['new'] = queries.apply(lambda x: self.logic(x))
+        
+        queries = queries.set_index('qid')['new'].to_dict()
         push_queries(outputs, inplace = True)
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
