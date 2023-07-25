@@ -53,4 +53,4 @@ class FLANT5(GenericModel):
         inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').to(self.device)
         outputs = self.model.generate(**inputs, **self.generation_config)
         outputs_text = self.tokenizer.batch_decode(outputs, skip_special_tokens = True)
-        return outputs_text
+        return list(map(clean, outputs_text))
