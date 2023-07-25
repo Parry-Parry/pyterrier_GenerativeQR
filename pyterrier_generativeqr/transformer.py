@@ -38,8 +38,7 @@ class GenerativeQR(pt.Transformer):
         
         queries = queries.set_index('qid')['new'].to_dict()
         push_queries(outputs, inplace = True)
-        outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
-        if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
+        outputs['query'] = outputs['qid'].apply(lambda x: queries[x], axis = 1)
 
         return outputs
 
