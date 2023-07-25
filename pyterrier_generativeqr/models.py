@@ -4,6 +4,7 @@ from abc import abstractmethod
 from numpy import array_split
 import torch
 import re
+from pyterrier.model import split_df
 from .configs import creative
 
 clean = lambda x : re.sub(r"[^a-zA-Z0-9¿]+", " ", x)
@@ -29,7 +30,7 @@ class GenericModel:
         if input is isinstance(input, str):
             return self.logic(input)
         elif isinstance(input, pd.Series):
-            return pd.concat([self.logic(chunk.tolist()) for chunk in array_split(input, len(input) // self.batch_size)])
+            return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(input, len(input) // self.batch_size)], axis=0)
         else: 
             raise TypeError("Input must be a string or a pandas Object")
 
