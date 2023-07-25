@@ -22,7 +22,7 @@ class GenerativeQR(pt.Transformer):
     def logic(self, query):
         prompt = self.prompt.format(input_query = query)
         output =  self.model.generate(prompt)[0]
-        tokens = output.split(' ')
+        tokens = output.split(' ')[len(query.split(' ')):]
         print('tokens: ', tokens)
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{query} {weighted_query}'
