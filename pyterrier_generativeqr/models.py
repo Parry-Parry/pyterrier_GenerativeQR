@@ -28,7 +28,7 @@ class GenericModel:
     
     def generate(self, inputs : Union[str, pd.Series, pd.DataFrame]) -> Union[str, pd.Series]:
         print(inputs)
-        if input is isinstance(input, str):
+        if isinstance(inputs, str):
             return self.logic(inputs)
         else: 
             return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(inputs, len(inputs) // self.batch_size)], axis=0)
