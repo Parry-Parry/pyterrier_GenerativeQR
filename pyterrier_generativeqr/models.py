@@ -43,9 +43,9 @@ class FLANT5(GenericModel):
                  **kwargs) -> None:
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
-        from transformers import T5ForConditionalGeneration, T5TokenizerFast
-        self.model = T5ForConditionalGeneration.from_pretrained(model_name, **kwargs)
-        self.tokenizer = T5TokenizerFast.from_pretrained(model_name)
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **kwargs)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     def postprocess(self, text):
         text = [clean(' '.join(t)) for t in text]
