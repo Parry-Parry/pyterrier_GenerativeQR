@@ -29,10 +29,8 @@ class GenericModel:
     def generate(self, input : Union[str, pd.Series, pd.DataFrame]) -> Union[str, pd.Series]:
         if input is isinstance(input, str):
             return self.logic(input)
-        elif isinstance(input, pd.Series):
-            return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(input, len(input) // self.batch_size)], axis=0)
         else: 
-            raise TypeError("Input must be a string or a pandas Object")
+            return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(input, len(input) // self.batch_size)], axis=0)
 
 class FLANT5(GenericModel):
     def __init__(self, 
