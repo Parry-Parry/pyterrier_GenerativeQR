@@ -40,7 +40,7 @@ class GenerativeQR(pt.Transformer):
     def transform(self, inputs):
 
         outputs = inputs.copy()
-        queries = outputs['qid', 'query']
+        queries = outputs[['qid', 'query']]
         queries = queries.groupby('qid').apply(self.logic)
 
         queries = queries.set_index('qid')
