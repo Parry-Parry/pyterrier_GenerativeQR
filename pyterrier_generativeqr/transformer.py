@@ -20,16 +20,13 @@ class GenerativeQR(pt.Transformer):
         self.return_counts = return_counts
     
     def logic(self, query):
-        first_row = query.iloc[0]
-        input_query = first_row['query']
-        
-        prompt = self.prompt.format(input_query = input_query)
+        prompt = self.prompt.format(input_query = query)
         output =  self.model.generate(prompt)
 
         tokens = output.split(' ')
 
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
-        new_query =  f'{input_query} {weighted_query}'
+        new_query =  f'{query} {weighted_query}'
 
         return new_query
 
