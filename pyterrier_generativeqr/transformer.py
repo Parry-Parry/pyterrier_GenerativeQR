@@ -32,8 +32,8 @@ class GenerativeQR(pt.Transformer):
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
 
-        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
-        if self.return_counts: new_frame['counts'] = len(count)
+        new_frame = {'qid' : [first_row['qid']], 'query' : [new_query]}
+        if self.return_counts: new_frame['counts'] = [len(count)]
 
         return pd.DataFrame(new_frame)
 
