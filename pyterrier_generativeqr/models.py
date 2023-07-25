@@ -26,11 +26,12 @@ class GenericModel:
     def logic(self, input : Union[str, pd.Series]) -> Union[str, List[str]]:
         raise NotImplementedError("This method must be implemented in a subclass")
     
-    def generate(self, input : Union[str, pd.Series, pd.DataFrame]) -> Union[str, pd.Series]:
+    def generate(self, inputs : Union[str, pd.Series, pd.DataFrame]) -> Union[str, pd.Series]:
+        print(inputs)
         if input is isinstance(input, str):
-            return self.logic(input)
+            return self.logic(inputs)
         else: 
-            return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(input, len(input) // self.batch_size)], axis=0)
+            return pd.concat([pd.Series(self.logic(chunk.tolist())) for chunk in split_df(inputs, len(inputs) // self.batch_size)], axis=0)
 
 class FLANT5(GenericModel):
     def __init__(self, 
