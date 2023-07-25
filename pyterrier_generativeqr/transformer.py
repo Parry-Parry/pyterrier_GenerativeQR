@@ -43,7 +43,7 @@ class GenerativeQR(pt.Transformer):
         queries = outputs[['qid', 'query']]
         queries = queries.groupby('qid').apply(self.logic)
 
-        queries = queries.set_index('qid').query.to_dict()
+        queries = queries.set_index('qid')['query'].to_dict()
         push_queries(outputs, inplace = True)
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
@@ -122,7 +122,7 @@ class GenerativePRF(pt.Transformer):
                 raise ValueError(f"Input must contain {attr} column")
 
         queries = inputs.copy().groupby('qid').apply(self.logic)
-        queries = queries.set_index('qid').query.to_dict()
+        queries = queries.set_index('qid')['query'].to_dict()
 
         outputs = inputs.copy()
         push_queries(outputs, inplace = True)
