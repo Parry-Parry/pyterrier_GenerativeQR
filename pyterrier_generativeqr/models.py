@@ -27,7 +27,6 @@ class GenericModel:
         raise NotImplementedError("This method must be implemented in a subclass")
     
     def generate(self, inputs : Union[str, pd.Series, pd.DataFrame]) -> Union[str, pd.Series]:
-        print(inputs)
         if isinstance(inputs, str):
             return self.logic(inputs)
         else: 
