@@ -21,8 +21,7 @@ class GenerativeQR(pt.Transformer):
     
     def logic(self, query):
         prompt = self.prompt.format(input_query = query)
-        output =  self.model.generate(prompt)
-
+        output =  self.model.generate(prompt)[0]
         tokens = output.split(' ')
 
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
@@ -38,7 +37,7 @@ class GenerativeQR(pt.Transformer):
         
         queries = queries.set_index('qid')['new'].to_dict()
         push_queries(outputs, inplace = True)
-        outputs['query'] = outputs['qid'].apply(lambda x: queries[x], axis = 1)
+        outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
 
         return outputs
 
