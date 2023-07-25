@@ -32,10 +32,10 @@ class GenerativeQR(pt.Transformer):
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
 
-        new_frame = {'qid' : [first_row['qid']], 'query' : [new_query]}
-        if self.return_counts: new_frame['counts'] = [len(count)]
+        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
+        if self.return_counts: new_frame['counts'] = len(count)
 
-        return pd.DataFrame(new_frame)
+        return pd.DataFrame.from_records([new_frame])
 
     def transform(self, inputs):
 
@@ -43,8 +43,8 @@ class GenerativeQR(pt.Transformer):
         queries = outputs[['qid', 'query']]
         queries = queries.groupby('qid').apply(self.logic)
 
-        queries = queries.set_index('qid')
-        push_queries(queries, inplace = True)
+        queries = queries.set_index('qid').query.to_dict()
+        push_queries(outputs, inplace = True)
         outputs['query'] = outputs.apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs.apply(lambda x: queries[x]['counts'], axis = 1)
 
@@ -113,7 +113,7 @@ class GenerativePRF(pt.Transformer):
         new_frame = {'qid' : first_row['qid'], 'query' : new_query}
         if self.return_counts: new_frame['counts'] = len(count)
 
-        return pd.DataFrame(new_frame)
+        return pd.DataFrame.from_records([new_frame])
 
     def transform(self, inputs):
 
@@ -122,10 +122,10 @@ class GenerativePRF(pt.Transformer):
                 raise ValueError(f"Input must contain {attr} column")
 
         queries = inputs.copy().groupby('qid').apply(self.logic)
-        queries = queries.set_index('qid')
+        queries = queries.set_index('qid').query.to_dict()
 
         outputs = inputs.copy()
-        push_queries(queries, inplace = True)
+        push_queries(outputs, inplace = True)
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
         if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
 
