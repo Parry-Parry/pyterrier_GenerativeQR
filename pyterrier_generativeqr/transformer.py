@@ -41,7 +41,9 @@ class GenerativeQR(pt.Transformer):
 
         outputs = inputs.copy()
         queries = outputs[['qid', 'query']]
-        queries = pd.concat(queries.groupby('qid').apply(self.logic), axis=0)
+        x = queries.groupby('qid').apply(self.logic)
+        print(x)
+        queries = pd.concat(x, axis=0)
 
         queries = queries.set_index('qid')['query'].to_dict()
         push_queries(outputs, inplace = True)
