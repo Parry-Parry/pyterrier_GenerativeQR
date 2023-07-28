@@ -37,7 +37,7 @@ class FLANT5(GenericModel):
                  generation_config: dict = None, 
                  num_return_sequences: int = 3, 
                  batch_size: int = 1, 
-                 device = 'cpu',
+                 device = 'cuda',
                  **kwargs) -> None:
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
@@ -48,7 +48,7 @@ class FLANT5(GenericModel):
     def logic(self, input : Union[str, List[str]]) -> Union[str, List[str]]:
         if isinstance(input, str): input = [input]
 
-        inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').to(self.device)
+        inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').cuda()
         outputs = self.model.generate(**inputs, **self.generation_config)
         outputs_text = self.tokenizer.batch_decode(outputs, skip_special_tokens = True)
         return list(map(clean, outputs_text))
