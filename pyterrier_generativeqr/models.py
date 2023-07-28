@@ -5,6 +5,7 @@ import torch
 import re
 from pyterrier.model import split_df
 from .configs import creative
+import logging
 
 clean = lambda x : re.sub(r"[^a-zA-Z0-9¿]+", " ", x)
 
@@ -50,6 +51,8 @@ class FLANT5(GenericModel):
 
     def logic(self, input : Union[str, List[str]]) -> Union[str, List[str]]:
         if isinstance(input, str): input = [input]
+
+        logging.info(f'Generating {len(input)} outputs')
 
         inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').cuda()
         outputs = self.model.generate(**inputs, **self.generation_config)
