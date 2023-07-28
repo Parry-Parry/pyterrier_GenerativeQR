@@ -49,6 +49,7 @@ class GenerativePRF(pt.Transformer):
                  model : Any, 
                  prompt : str = None,
                  beta : float = 0.5,
+                 k : int = 3,
                  return_counts : bool = False,
                  text_attr :str = 'text',
                  type : str = 'topp',
@@ -58,6 +59,7 @@ class GenerativePRF(pt.Transformer):
         self.model = model
         self.prompt = prompt if prompt else self.default
         self.beta = beta
+        self.k = k
         self.return_counts = return_counts
         self.text_attr = text_attr
 

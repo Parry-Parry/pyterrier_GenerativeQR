@@ -1,7 +1,6 @@
 from typing import List, Union
 import pandas as pd
 from abc import abstractmethod
-from numpy import array_split
 import torch
 import re
 from pyterrier.model import split_df
