@@ -3,6 +3,7 @@ import pyterrier as pt
 from collections import Counter
 import pandas as pd
 from pyterrier.model import push_queries
+import logging
     
 class GenerativeQR(pt.Transformer):
     default = 'Improve the search effectiveness by suggesting expansion terms for the query: {input_query}'
@@ -20,7 +21,6 @@ class GenerativeQR(pt.Transformer):
         self.return_counts = return_counts
     
     def logic(self, query):
-        print('running logic')
         prompt = self.prompt.format(input_query = query)
         output =  self.model.generate(prompt)[0]
         #tokens = output.split(' ')[len(query.split(' ')):]
@@ -89,7 +89,7 @@ class GenerativePRF(pt.Transformer):
         return ' '.join(inputs.head(k)[self.text_attr].values)
     
     def logic(self, query):
-
+        logging.info('Generating new query')
         query = query.sort_values('rank')
         first_row = query.iloc[0]
         input_query = first_row['query']
@@ -98,6 +98,7 @@ class GenerativePRF(pt.Transformer):
         context = self.context_extract(query, k)
         prompt = self.prompt.format(input_query = input_query, context = context)
         output =  self.model.generate(prompt)[0]
+        logging.info(f'Generating done')
 
         tokens = output.split()
         count = Counter(output)
