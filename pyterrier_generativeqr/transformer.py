@@ -96,7 +96,7 @@ class GenerativePRF(pt.Transformer):
 
         context = self.context_extract(query, k)
         prompt = self.prompt.format(input_query = input_query, context = context)
-        output =  self.model.generate(prompt)
+        output =  self.model.generate(prompt)[0]
 
         tokens = output.split()
         count = Counter(output)
