@@ -105,7 +105,6 @@ class GenerativePRF(pt.Transformer):
         new_query =  f'{input_query} {weighted_query}'
 
         new_frame = {'qid' : first_row['qid'], 'query' : new_query}
-        if self.return_counts: new_frame['counts'] = len(count)
 
         return pd.DataFrame.from_records([new_frame])
 
@@ -120,8 +119,7 @@ class GenerativePRF(pt.Transformer):
 
         outputs = inputs.copy()
         push_queries(outputs, inplace = True)
-        outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'])
-        if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'])
+        outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
 
         return outputs
         
