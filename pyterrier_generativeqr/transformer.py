@@ -120,8 +120,8 @@ class GenerativePRF(pt.Transformer):
 
         outputs = inputs.copy()
         push_queries(outputs, inplace = True)
-        outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'], axis = 1)
-        if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'], axis = 1)
+        outputs['query'] = outputs['qid'].apply(lambda x: queries[x]['query'])
+        if self.return_counts: outputs['counts'] = outputs['qid'].apply(lambda x: queries[x]['counts'])
 
         return outputs
         
