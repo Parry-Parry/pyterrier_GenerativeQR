@@ -42,7 +42,10 @@ class FLANT5(GenericModel):
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
         from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **kwargs)
+        if 'device_map' not in kwargs: 
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **kwargs).to(self.device)
+        else:
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def logic(self, input : Union[str, List[str]]) -> Union[str, List[str]]:
