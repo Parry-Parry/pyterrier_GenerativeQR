@@ -42,6 +42,8 @@ class FLANT5(GenericModel):
                  **kwargs) -> None:
         super().__init__(generation_config, num_return_sequences, batch_size, device)
 
+        self.count = 0
+
         from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
         if 'device_map' not in kwargs: 
             self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **kwargs).to(self.device)
@@ -52,9 +54,11 @@ class FLANT5(GenericModel):
     def logic(self, input : Union[str, List[str]]) -> Union[str, List[str]]:
         if isinstance(input, str): input = [input]
 
-        logging.info(f'Generating {len(input)} outputs')
+        logging.info(f'Generating query: {self.count}')
 
         inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').cuda()
         outputs = self.model.generate(**inputs, **self.generation_config)
         outputs_text = self.tokenizer.batch_decode(outputs, skip_special_tokens = True)
+
+        self.count += 1
         return list(map(clean, outputs_text))
