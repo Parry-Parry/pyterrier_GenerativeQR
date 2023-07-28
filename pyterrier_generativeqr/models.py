@@ -35,7 +35,7 @@ class FLANT5(GenericModel):
     def __init__(self, 
                  model_name : str, 
                  generation_config: dict = None, 
-                 num_return_sequences: int = 1, 
+                 num_return_sequences: int = 10, 
                  batch_size: int = 1, 
                  device = 'cpu',
                  **kwargs) -> None:
