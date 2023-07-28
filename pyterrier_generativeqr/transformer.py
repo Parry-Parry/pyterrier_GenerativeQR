@@ -20,6 +20,7 @@ class GenerativeQR(pt.Transformer):
         self.return_counts = return_counts
     
     def logic(self, query):
+        print('running logic')
         prompt = self.prompt.format(input_query = query)
         output =  self.model.generate(prompt)[0]
         #tokens = output.split(' ')[len(query.split(' ')):]
