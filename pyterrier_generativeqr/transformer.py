@@ -41,7 +41,7 @@ class GenerativeQR(pt.Transformer):
         queries['new'] = queries['query'].apply(lambda x: self.logic(x))
         
         queries = queries.set_index('qid')['new'].to_dict()
-        push_queries(outputs, inplace = True, keep_original=True)
+        outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
         
         return outputs
@@ -121,7 +121,7 @@ class GenerativePRF(pt.Transformer):
         queries = queries.set_index('qid')['query'].to_dict()
 
         outputs = inputs.copy()
-        push_queries(outputs, inplace = True, keep_original=True)
+        outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
 
         return outputs
