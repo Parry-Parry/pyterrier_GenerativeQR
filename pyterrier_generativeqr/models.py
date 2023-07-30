@@ -56,7 +56,7 @@ class FLANT5(GenericModel):
 
         logging.info(f'Generating query: {self.count}')
 
-        inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').cuda()
+        inputs = self.tokenizer(input, padding = True, truncation = True, return_tensors = 'pt').to(self.device)
         outputs = self.model.generate(**inputs, **self.generation_config)
         outputs_text = self.tokenizer.batch_decode(outputs, skip_special_tokens = True)
 
