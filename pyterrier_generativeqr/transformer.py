@@ -41,9 +41,11 @@ class GenerativeQR(pt.Transformer):
         queries['new'] = queries['query'].apply(lambda x: self.logic(x))
         
         queries = queries.set_index('qid')['new'].to_dict()
+
+        outputs = outputs.drop_duplicates('qid')[['qid', 'query']]
         outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
-        
+
         return outputs
 
 class GenerativePRF(pt.Transformer):
@@ -102,7 +104,6 @@ class GenerativePRF(pt.Transformer):
         output =  self.model.generate(prompt)[0]
 
         tokens = output.split()
-        count = Counter(output)
 
         weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
         new_query =  f'{input_query} {weighted_query}'
@@ -121,6 +122,7 @@ class GenerativePRF(pt.Transformer):
         queries = queries.set_index('qid')['query'].to_dict()
 
         outputs = inputs.copy()
+        outputs = outputs.drop_duplicates('qid')[['qid', 'query']]
         outputs['query_0'] = outputs['query']
         outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
 
