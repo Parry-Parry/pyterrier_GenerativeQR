@@ -13,7 +13,6 @@ creative = {
 deterministic = {
     'min_length' : 20, 
     'max_new_tokens' : 40, 
-    'temperature' : 0.3,
     'do_sample' : False,
     'top_k' : 200,
     'top_p' : 0.92,

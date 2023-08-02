@@ -27,7 +27,7 @@ class GenericModel:
         if isinstance(inputs, str):
             return self.logic(inputs)
         else: 
-            return concatenate([self.logic(chunk) for chunk in batch(inputs, ceil(len(inputs) / self.batch_size))])
+            return concatenate([self.logic(chunk) for chunk in batch(inputs, int(ceil(len(inputs) / self.batch_size)))])
 
 class Seq2SeqLM(GenericModel):
     def __init__(self, 
