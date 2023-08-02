@@ -100,8 +100,8 @@ class GenerativePRF(GenerativeExpansion):
 
         queries['new'] = list(map(lambda x, y : self.postprocess(x, y), queries['query'].tolist(), model_outputs))
 
-        queries = push_queries(queries)
-        queries = queries.rename(columns = {'query' : 'query_0', 'new' : 'query'})
+        queries = push_queries(queries, keep_original=True)
+        queries = queries.rename(columns = {'new' : 'query'})
         
         return queries[query_columns(queries)]
         
