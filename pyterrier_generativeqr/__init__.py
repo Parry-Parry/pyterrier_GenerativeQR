@@ -1,2 +1,2 @@
 from .transformer import GenerativePRF, GenerativeQR
-from .models import GenericModel, FLANT5
+from .models import GenericModel, Seq2SeqLM, CausalLM
