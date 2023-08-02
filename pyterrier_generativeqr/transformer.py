@@ -40,7 +40,7 @@ class GenerativeQR(GenerativeExpansion):
 
         return queries[['qid', 'query' 'new']].rename(columns = {'query' : 'query_0', 'new' : 'query'})
 
-class GenerativePRF(GenerativeExpansion):
+class GenerativeRF(GenerativeExpansion):
     essential = ['docno', 'qid', 'query']
     default = 'Improve the search effectiveness by suggesting expansion terms for the query:{input_query}, based on the given context information: {context}'
     def __init__(self, 
