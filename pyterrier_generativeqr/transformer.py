@@ -1,54 +1,46 @@
 from typing import Any
 import pyterrier as pt
-from collections import Counter
-import pandas as pd
-from pyterrier.model import push_queries
-import logging
+from pyterrier.model import push_queries, query_columns
+
+class GenerativeExpansion(pt.Transformer):
+    def __init__(self, 
+                 model : Any, 
+                 beta : float = 0.5,
+                 **kwargs):
+        super().__init__(**kwargs)
+
+        self.model = model
+        self.beta = beta
     
-class GenerativeQR(pt.Transformer):
+    def postprocess(self, input_query, output_query):
+        tokens = output_query.split(' ')
+        weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
+        new_query =  f'{input_query} {weighted_query}'
+        return new_query
+    
+class GenerativeQR(GenerativeExpansion):
     default = 'Improve the search effectiveness by suggesting expansion terms for the query: {input_query}'
     def __init__(self, 
                  model : Any, 
                  prompt : str = None,
                  beta : float = 0.5,
-                 return_counts : bool = False,
                  **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(model=model, beta=beta, **kwargs)
 
-        self.model = model
         self.prompt = prompt if prompt else self.default
-        self.beta = beta
-        self.return_counts = return_counts
-
-        self.count = 0
-    
-    def logic(self, query):
-        logging.info(f'Generating query: {self.count}')
-        prompt = self.prompt.format(input_query = query)
-        output =  self.model.generate(prompt)[0]
-        #tokens = output.split(' ')[len(query.split(' ')):]
-        tokens = output.split(' ')
-
-        weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
-        new_query =  f'{query} {weighted_query}'
-        self.count+=1
-        return new_query
 
     def transform(self, inputs):
         
-        outputs = inputs.copy()
-        queries = outputs[['qid', 'query']].drop_duplicates()
-        queries['new'] = queries['query'].apply(lambda x: self.logic(x))
-        
-        queries = queries.set_index('qid')['new'].to_dict()
+        queries = inputs[['qid', 'query']].copy().drop_duplicates()
 
-        outputs = outputs.drop_duplicates('qid')[['qid', 'query']]
-        outputs['query_0'] = outputs['query']
-        outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
+        prompts = list(map(lambda x : self.prompt.format(input_query=x), queries['query'].tolist()))
+        model_outputs = self.model.generate(prompts)
 
-        return outputs
+        queries['new'] = list(map(lambda x, y : self.postprocess(x, y), queries['query'].tolist(), model_outputs))
 
-class GenerativePRF(pt.Transformer):
+        return queries[['qid', 'query' 'new']].rename(columns = {'query' : 'query_0', 'new' : 'query'})
+
+class GenerativePRF(GenerativeExpansion):
     essential = ['docno', 'qid', 'query']
     default = 'Improve the search effectiveness by suggesting expansion terms for the query:{input_query}, based on the given context information: {context}'
     def __init__(self, 
@@ -56,17 +48,13 @@ class GenerativePRF(pt.Transformer):
                  prompt : str = None,
                  beta : float = 0.5,
                  k : int = 3,
-                 return_counts : bool = False,
                  text_attr :str = 'text',
                  type : str = 'topp',
                  **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(model=model, beta=beta, **kwargs)
 
-        self.model = model
         self.prompt = prompt if prompt else self.default
-        self.beta = beta
         self.k = k
-        self.return_counts = return_counts
         self.text_attr = text_attr
 
         self.essential.append(self.text_attr)
@@ -93,24 +81,10 @@ class GenerativePRF(pt.Transformer):
         inputs = inputs.groupby('docno').apply(lambda x: x.sort_values('score').head(1))
         return ' '.join(inputs.head(k)[self.text_attr].values)
     
-    def logic(self, query):
+    def get_context(self, query):
         query = query.sort_values('rank')
-        first_row = query.iloc[0]
-        input_query = first_row['query']
         k = min(self.k, len(query))
-
-        context = self.context_extract(query, k)
-        prompt = self.prompt.format(input_query = input_query, context = context)
-        output =  self.model.generate(prompt)[0]
-
-        tokens = output.split()
-
-        weighted_query = ' '.join([f'{token}^{self.beta}' for token in tokens])
-        new_query =  f'{input_query} {weighted_query}'
-
-        new_frame = {'qid' : first_row['qid'], 'query' : new_query}
-
-        return pd.DataFrame.from_records([new_frame])
+        return self.context_extract(query, k)
 
     def transform(self, inputs):
 
@@ -118,14 +92,17 @@ class GenerativePRF(pt.Transformer):
             if attr not in inputs.columns:
                 raise ValueError(f"Input must contain {attr} column")
 
-        queries = inputs.copy().groupby('qid').apply(self.logic)
-        queries = queries.set_index('qid')['query'].to_dict()
+        context = inputs.copy().groupby('qid').apply(self.get_context)
+        queries = inputs.copy().drop_duplicates('qid')
 
-        outputs = inputs.copy()
-        outputs = outputs.drop_duplicates('qid')[['qid', 'query']]
-        outputs['query_0'] = outputs['query']
-        outputs['query'] = outputs['qid'].apply(lambda x: queries[x])
+        prompts = list(map(lambda x, y : self.prompt.format(input_query=x, context=y), queries['query'].tolist(), context.tolist()))
+        model_outputs = self.model.generate(prompts)
 
-        return outputs
+        queries['new'] = list(map(lambda x, y : self.postprocess(x, y), queries['query'].tolist(), model_outputs))
+
+        queries = push_queries(queries)
+        queries = queries.rename(columns = {'query' : 'query_0', 'new' : 'query'})
+        
+        return queries[query_columns(queries)]
         
         
