@@ -20,7 +20,7 @@ class GenericModel:
         self.device = torch.device(device)
 
     @abstractmethod
-    def logic(self, input : Union[str, pd.Series]) -> Union[str, List[str]]:
+    def logic(self, input : Union[str, List[str]]) -> Union[str, List[str]]:
         raise NotImplementedError("This method must be implemented in a subclass")
     
     def generate(self, inputs : Union[str, list]) -> Union[str, pd.Series]:
